@@ -1,0 +1,181 @@
+import java.awt.*;
+import javax.swing.*;
+import java.io.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.awt.event.*;
+import javax.swing.plaf.metal.*;
+import javax.swing.text.*;
+
+public class Sup extends JFrame implements ActionListener {
+	JTextArea t;
+	JFrame f;
+	public Sup(){
+		f=new JFrame("Editor");
+		t=new JTextArea();
+		JMenuBar mb=new JMenuBar();
+		JMenu m1=new JMenu("File");
+		JMenuItem mi1=new JMenuItem("New");
+		JMenuItem mi2=new JMenuItem("Open");
+		JMenuItem mi3=new JMenuItem("Save");
+		mi1.addActionListener(this);
+		mi2.addActionListener(this);
+		mi3.addActionListener(this);
+		m1.add(mi1);
+		m1.add(mi2);
+		m1.add(mi3);
+		JMenu m2=new JMenu("Edit");
+		JMenuItem mi5=new JMenuItem("cut");
+		JMenuItem mi6=new JMenuItem("copy");
+		JMenuItem mi7=new JMenuItem("paste");
+		JMenuItem mi8=new JMenuItem("find");
+		JMenuItem mi9=new JMenuItem("replace");
+		mi5.addActionListener(this);
+		mi6.addActionListener(this);
+		mi7.addActionListener(this);
+		mi8.addActionListener(this);
+		mi9.addActionListener(this);
+		m2.add(mi5);
+		m2.add(mi6);
+		m2.add(mi7);
+		m2.add(mi8);
+		m2.add(mi9);
+		mb.add(m1);
+		mb.add(m2);
+		f.setJMenuBar(mb);
+		f.add(t);
+		f.setSize(500,500);
+		f.setVisible(true);		
+	}
+	public void actionPerformed(ActionEvent e) {
+		String s=e.getActionCommand();
+		if(s.contentEquals("cut")){
+			t.cut();
+		}
+		else if(s.contentEquals("copy")){
+			t.copy();
+		}
+		else if(s.contentEquals("paste")) {
+			t.paste();
+		}
+		else if(s.contentEquals("find")) {
+			JFrame f2=new JFrame("Find");
+			JLabel l1=new JLabel("Enter search keyword");
+			l1.setFont(new Font("serif",Font.PLAIN,16));
+			JTextField l2=new JTextField(20);
+			JButton b1=new JButton("OK");
+			f2.add(l1);
+			f2.add(l2);
+			f2.add(b1);
+			f2.setSize(250,150);
+			f2.setLayout(new FlowLayout());
+			f2.setVisible(true);
+			String s1="";
+			String s3=t.getText();
+			b1.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					t.setText(s3);
+					String s1=l2.getText();
+					String s2=t.getText();
+					Highlighter h=t.getHighlighter();
+					Pattern pattern = Pattern.compile(s1);
+					Matcher matcher=pattern.matcher(s2);
+					while(matcher.find()) {
+						int start=matcher.start();
+						int end=matcher.end();
+						try {
+							h.addHighlight(start, end,DefaultHighlighter.DefaultPainter);
+						}
+						catch(Exception e1) {
+						}
+					}
+					if(!(s2.contains(s1))) {
+						l2.setText("The word is not present");
+					}
+				}									
+			});
+		}
+		else if(s.contentEquals("replace")) {
+			JFrame f2=new JFrame("Replace");
+			JLabel l1=new JLabel("Enter original word");
+			l1.setFont(new Font("serif",Font.PLAIN,16));
+			JTextField l2=new JTextField(20);
+			JLabel l3=new JLabel("Enter new word");
+			l3.setFont(new Font("serif",Font.PLAIN,16));
+			JTextField l4=new JTextField(20);
+			JButton b2=new JButton("Ok");
+			f2.add(l1);
+			f2.add(l2);
+			f2.add(l3);
+			f2.add(l4);
+			f2.add(b2);
+			f2.setSize(250,200);
+			f2.setLayout(new FlowLayout());
+			f2.setVisible(true);
+			b2.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					String s1=l2.getText();
+					String s2=l4.getText();
+					String s3=t.getText();
+					s3=s3.replace(s1, s2);
+					t.setText(s3);
+				}
+			});
+		}
+		else if(s.contentEquals("Save")) {
+			JFileChooser j=new JFileChooser("f:");
+			int r=j.showSaveDialog(null);
+			if(r==JFileChooser.APPROVE_OPTION) {
+				File fi=new File(j.getSelectedFile().getAbsolutePath());
+				try {
+					FileWriter wr=new FileWriter(fi,false);
+					BufferedWriter w=new BufferedWriter(wr);
+					w.write(t.getText());
+					w.close();					
+				}
+				catch(Exception e1) {				
+				}
+			}
+		}
+		else if(s.contentEquals("Open")) {
+			JFileChooser j=new JFileChooser("f:");
+			int r=j.showOpenDialog(null);
+			if(r==JFileChooser.APPROVE_OPTION) {
+				File fi=new File(j.getSelectedFile().getAbsolutePath());
+				try {
+					String s1="",s2="";
+					FileReader fr=new FileReader(fi);
+					BufferedReader br=new BufferedReader(fr);
+					while((s1=br.readLine())!=null) {
+						s2+=s1+"\n";
+					}
+					t.setText(s2);
+				}
+				catch(Exception e1) {
+				}
+			}
+			else {
+				JOptionPane.showMessageDialog(f, "The user has cancelled operation");
+			}
+		}
+		else if(s.contentEquals("New")) {
+			t.setText("");
+		}
+		else if(s.equals("close")) {
+			f.setVisible(false);
+		}
+	}
+	public static void main(String args[]) {
+		Sup e=new Sup();
+	}
+ 
+}
+		
+					
+						
+					
+					
+		
+	
+
+
