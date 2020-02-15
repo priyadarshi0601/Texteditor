@@ -1,8 +1,12 @@
 import java.awt.*;
+import java.awt.List;
+
 import javax.swing.*;
 import java.io.*;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 import java.awt.event.*;
 import javax.swing.plaf.metal.*;
 import javax.swing.text.*;
@@ -10,9 +14,15 @@ import javax.swing.text.*;
 public class Sup extends JFrame implements ActionListener {
 	JTextArea t;
 	JFrame f;
+	String fontname;
+	int fontsize;
 	public Sup(){
 		f=new JFrame("Editor");
 		t=new JTextArea();
+		t.setBackground(new Color(0,0,0));
+		t.setForeground(Color.cyan);
+		t.setFont(new Font("serif",Font.BOLD,25));
+		t.setCaretColor(Color.cyan);
 		JMenuBar mb=new JMenuBar();
 		JMenu m1=new JMenu("File");
 		JMenuItem mi1=new JMenuItem("New");
@@ -40,8 +50,16 @@ public class Sup extends JFrame implements ActionListener {
 		m2.add(mi7);
 		m2.add(mi8);
 		m2.add(mi9);
+		JMenu m3=new JMenu("Format");
+		JMenuItem mi10=new JMenuItem("Font");
+		JMenuItem mi11=new JMenuItem("Size");
+		mi10.addActionListener(this);
+		mi11.addActionListener(this);
+		m3.add(mi10);
+		m3.add(mi11);
 		mb.add(m1);
 		mb.add(m2);
+		mb.add(m3);
 		f.setJMenuBar(mb);
 		f.add(t);
 		f.setSize(500,500);
@@ -51,6 +69,47 @@ public class Sup extends JFrame implements ActionListener {
 		String s=e.getActionCommand();
 		if(s.contentEquals("cut")){
 			t.cut();
+		}
+		else if(s.contentEquals("Font")) {
+			JFrame f2=new JFrame("Font");
+			JLabel l1=new JLabel("Select font type");
+			String f1[]=GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+			JComboBox box1=new JComboBox(f1);
+			JButton b1=new JButton("OK");
+			f2.setLayout(new FlowLayout());
+			f2.add(l1);
+			f2.add(box1);
+			f2.add(b1);
+			f2.setSize(300,100);
+			f2.setVisible(true);
+			b1.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					fontname=(String) box1.getSelectedItem();
+					System.out.println(fontname);
+					t.setFont(new Font(fontname,Font.BOLD,25));
+				}
+			});
+		}
+		else if(s.contentEquals("Size")) {
+			JFrame f2=new JFrame("Font Size");
+			JLabel l1=new JLabel("Select font size");
+			int f1[]=IntStream.range(1, 100).toArray();
+			Integer f22[]=Arrays.stream(f1).boxed().toArray(Integer[]::new);
+			JComboBox<Integer> box1=new JComboBox<Integer>(f22);
+			JButton b1=new JButton("OK");
+			f2.setLayout(new FlowLayout());
+			f2.add(l1);
+			f2.add(box1);
+			f2.add(b1);
+			f2.setSize(300,100);
+			f2.setVisible(true);
+			b1.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					fontsize=(int) box1.getSelectedItem();
+					System.out.println(fontsize);
+					t.setFont(new Font(fontname,Font.BOLD,fontsize));
+				}
+			});
 		}
 		else if(s.contentEquals("copy")){
 			t.copy();
